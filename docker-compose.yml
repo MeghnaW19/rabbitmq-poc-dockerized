@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.7.5-management
+    hostname: localhost
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia/rabbit@app-rabbitmq:cached
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 6085e2412b6fa88647466c6a81c0cea0
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST:
+
+  rabbitmq-publisher:
+    build: rabbitmq-publisher/
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    depends_on:
+      - rabbitmq
+    ports:
+      - 9099:9099
+
+  rabbitmq-listener:
+    build: rabbitmq-listener/
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8081:8081
+
+  rabbitmq-publisher-object:
+    build: rabbitmq-publisher-object/
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8082:8082
+
+  rabbitmq-listener-object:
+    build: rabbitmq-listener-object/
+    restart: always
+    network_mode: "host"
+    hostname: localhost
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8083:8083
+
